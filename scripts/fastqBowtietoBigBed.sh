@@ -10,7 +10,7 @@
 nrMM="2"
 mapLen="36"
 gap="1000"
-tempDir="/clustertmp/stark/vanja.haberle/"
+tempDir="/home/groups/CEDAR/roskamsh/test_data/temp"
 USE=4
 KEEPSEQ="0"
 KEEPMM="0"
@@ -128,8 +128,8 @@ fi
 # Set index and chromosome sizes
 ################################################################################
 
-INDEX="/groups/stark/indices/bowtie/${species}/${species}"
-SIZES="/groups/stark/genomes/chrom/${species}.chrom.sizes"
+INDEX="/home/groups/CEDAR/roskamsh/projects/Omics-QC-Pipeline-SE/data/genomes/GRCh38.primary_assembly.genome_bowtie1"
+SIZES="/home/groups/CEDAR/roskamsh/projects/Omics-QC-Pipeline-SE/data/genomes/chrNameLength.txt"
 
 [ -e "${INDEX}.1.ebwt" ] || echo >&2 "ERROR: No bowtie index files found for genome assembly ${assembly}!"
 [ -e "${SIZES}" ] || echo >&2 "ERROR: No chromosome sizes file found for genome assembly ${assembly}!"
@@ -202,7 +202,7 @@ fi
 
 if [ "$type" == "single" ]; then
     bowtie -p $USE -q -v $nrMM -m 1 --best --strata $INDEX ${mytemp}/${sample}.trimmed.fq > ${mytemp}/${sample}.reads.bowtie 2> ${outDir}${sample}.mapping.stat
-    rm ${mytemp}/${sample}.trimmed.fa
+    rm ${mytemp}/${sample}.trimmed.fq
 elif [ "$type" == "paired" ]; then
     bowtie -p $USE -q -X $gap -v $nrMM -m 1 --best --strata $INDEX -1 ${mytemp}/${sample}.read_1.trimmed.fq -2 ${mytemp}/${sample}.read_2.trimmed.fq > ${mytemp}/${sample}.reads.bowtie 2> ${outDir}${sample}.mapping.stat
     rm ${mytemp}/${sample}.read_1.trimmed.fq ${mytemp}/${sample}.read_2.trimmed.fq
@@ -272,7 +272,7 @@ rm ${mytemp}/${sample}.reads.bowtie
 (echo -n "Applying filters: "; date) >> $TMP/LOG.log
 
 if [ $FILTER = "0" ]; then
-awk -vOFS='\t' -vS=$KEEPSEQ -vM=$KEEPMM '{print $1,$2,$3,S==1?$4:".",M==1?$5:"0",$6}' ${mytemp}/${sample}.reads.sorted.bed > ${mytemp}/${sample}.reads.filtered.bed
+    awk -vOFS='\t' -vS=$KEEPSEQ -vM=$KEEPMM '{print $1,$2,$3,S==1?$4:".",M==1?$5:"0",$6}' ${mytemp}/${sample}.reads.sorted.bed > ${mytemp}/${sample}.reads.filtered.bed
 elif [ $FILTER = "1" ]; then
     awk -vOFS='\t' -vS=$KEEPSEQ -vM=$KEEPMM '(!x[$1" "$2" "$3" "$6]++){print $1,$2,$3,S==1?$4:".",M==1?$5:"0",$6}' ${mytemp}/${sample}.reads.sorted.bed > ${mytemp}/${sample}.reads.filtered.bed
 elif [ $FILTER = "A" ]; then
@@ -315,7 +315,7 @@ else
     rm ${mytemp}/${sample}.reads.filtered.bed
 fi
 
-## Moving final product bigBeg file to your output directory
+## Moving final product bigBed file to your output directory
 if [ "$type" == "single" && "$FILTER" == "A"]; then
     mv ${mytemp}/${sample}.all.bb ${outDir}/${sample}.mapped.reads.all.bb
     mv ${mytemp}/${sample}.bb ${outDir}/${sample}.mapped.reads.bb
@@ -328,7 +328,7 @@ elif [ "$type" == "paired" && ("$FILTER" == "0" || "$FILTER" == "1")]; then
     mv ${mytemp}/${sample}.reads.final.bb ${outDir}/${sample}.mapped.fragments.bb
 fi
 
-## Remove temporary bigbeg files
+## Remove temporary bigbed files
 if [ "$FILTER" == "A"]; then
     rm ${mytemp}/${sample}.all.bb
     rm ${mytemp}/${sample}.bb
