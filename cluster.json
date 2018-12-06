@@ -9,5 +9,13 @@
         "e" : "logs/{rule}/{wildcards}_{rule}%j.err",
         "c" : 4,
         "mem" : 45000
+    },
+     "alignToBigBed" :
+    {
+        "J" : "alignToBigBed",
+        "o" : "logs/alignToBigBed/alignToBigBed%j.out",
+        "e" : "logs/alignToBigBed/alignToBigBed%j.err",
+        "c" : 12,
+        "mem" : 64000
     }
 }
