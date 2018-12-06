@@ -1,4 +1,8 @@
-test-data-SE:
-  /home/exacloud/lustre1/CEDAR/lusardi/miniTestChip/data/
-test-data-PE:
-  
+assembly:
+  hg38
+filter:
+  0
+project_id:
+  ChIP-seq-12-06-2018
+type:
+  SE
