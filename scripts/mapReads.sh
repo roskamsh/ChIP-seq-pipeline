@@ -62,7 +62,7 @@ fi
 # Parse input and error checking
 ################################################################################
 
-while getopts "i:n:l:m:g:a:f:r:u:o" op
+while getopts "i:n:l:m:g:a:f:r:u:o:" op
 do
     case "$op" in
         i)  fastqFile="$OPTARG";;
@@ -103,6 +103,8 @@ if [ -z "$outDir" ]; then
     echo >&2 "ERROR: Specify output directory!"
     exit 1
 fi
+
+echo "input: $fastqFile; sampleID: $sample; mapping length: $mapLen; num mismatches: $nrMM; gap for PE reads: $gap, Filter: $FILTER; KeepLog: $KEEPLOG; Use: $USE;  genome assembly: $assembly; Output Directory: $outDir"
 
 ################################################################################
 # Set index and chromosome sizes
@@ -255,18 +257,18 @@ rm ${TMP}/${sample}.reads.bowtie
 (echo -n "Applying filters: "; date) >> $TMP/LOG.log
 
 if [ $FILTER = "0" ]; then
-    bedToBigBed ${TMP}/${sample}.reads.sorted.bed $SIZES ${TMP}/${sample}.all.bb 2>> ${TMP}/LOG.log
+    /home/groups/CEDAR/tools/kentUtils/bedToBigBed ${TMP}/${sample}.reads.sorted.bed $SIZES ${TMP}/${sample}.all.bb 2>> ${TMP}/LOG.log
     echo >> ${TMP}/LOG.log
     mv ${TMP}/${sample}.all.bb ${outDir}/${sample}.all.bb
 elif [ $FILTER = "1" ]; then
     awk -vOFS='\t' '(!x[$1" "$2" "$3" "$6]++){print $0}' ${TMP}/${sample}.reads.sorted.bed > ${TMP}/${sample}.reads.filtered.bed
-    bedToBigBed ${TMP}/${sample}.reads.filtered.bed $SIZES ${TMP}/${sample}.bb 2>> ${TMP}/LOG.log
+    /home/groups/CEDAR/tools/kentUtils/bedToBigBed ${TMP}/${sample}.reads.filtered.bed $SIZES ${TMP}/${sample}.bb 2>> ${TMP}/LOG.log
     echo >> ${TMP}/LOG.log
     mv ${TMP}/${sample}.bb ${outDir}/${sample}.bb
 elif [ $FILTER = "A" ]; then
-    bedToBigBed ${TMP}/${sample}.reads.sorted.bed $SIZES ${TMP}/${sample}.all.bb 2>> ${TMP}/LOG.log
+    /home/groups/CEDAR/tools/kentUtils/bedToBigBed ${TMP}/${sample}.reads.sorted.bed $SIZES ${TMP}/${sample}.all.bb 2>> ${TMP}/LOG.log
     awk -vOFS='\t' '(!x[$1" "$2" "$3" "$6]++){print $0}' ${TMP}/${sample}.reads.sorted.bed > ${TMP}/${sample}.reads.filtered.bed
-    bedToBigBed ${TMP}/${sample}.reads.filtered.bed $SIZES ${TMP}/${sample}.bb 2>> ${TMP}/LOG.log
+    /home/groups/CEDAR/tools/kentUtils/bedToBigBed ${TMP}/${sample}.reads.filtered.bed $SIZES ${TMP}/${sample}.bb 2>> ${TMP}/LOG.log
     echo >> ${TMP}/LOG.log
     mv ${TMP}/${sample}.bb ${outDir}/${sample}.bb
     mv ${TMP}/${sample}.all.bb ${outDir}/${sample}.all.bb

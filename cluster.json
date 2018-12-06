@@ -9,5 +9,13 @@
         "e" : "logs/{rule}/{wildcards}_{rule}%j.err",
         "c" : 4,
         "mem" : 45000
+    },
+     "mapReads" :
+    {
+        "J" : "mapReads",
+        "o" : "logs/mapReads/mapReads%j.out",
+        "e" : "logs/mapReads/mapReads%j.err",
+        "c" : 12,
+        "mem" : 64000
     }
 }
