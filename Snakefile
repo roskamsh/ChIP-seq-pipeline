@@ -12,10 +12,14 @@ timestamp = ('{:%Y-%m-%d_%H:%M:%S}'.format(datetime.datetime.now()))
 
 configfile:"config.yaml"
 project_id = config["project_id"]
+seq_type = config["seq_type"]
 
-SAMPLES, = glob_wildcards("samples/raw/{sample}_R1.fq")
+if config["seq_type"]=="SE":
+    SAMPLES, = glob_wildcards("samples/raw/{sample}.fastq.gz")
+else:
+    SAMPLES, = glob_wildcards("samples/raw/{sample}_R1.fastq.gz")
 
-rule_dirs = ['alignToBigBed']
+rule_dirs = ['mapReads']
 for rule in rule_dirs:
     if not os.path.exists(os.path.join(os.getcwd(),'logs',rule)):
         log_out = os.path.join(os.getcwd(), 'logs', rule)
