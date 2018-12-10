@@ -1,17 +1,13 @@
 rule mapReads:
     input:
-        SE = "samples/raw/{sample}.fastq.gz",
-        PE = "samples/raw/{sample}_R1.fastq.gz|samples/raw/{sample}_R2.fastq.gz" 
+        reads = "samples/raw/{sample}.fastq.gz" if config["seq_type"]=="SE" else "samples/raw/{sample}_R1.fastq.gz|samples/raw/{sample}_R2.fastq.gz"
     output:
-        "samples/bigBed/{sample}.bb"
+        "samples/bigBed/{sample}.mapped.reads.bb"
     params:
         assembly = config["assembly"],
-        filter = config["filter"],
-        type = config["type"]
+        filter = config["filter"]
     conda:
         "../envs/bowtie.yaml"
-    run:
-        if params.type == "SE":
-            shell("scripts/mapReads.sh -i={input.SE} -n={wildcards.sample} -a={params.assembly} -f={params.filter} -o=samples/bigBed/")
-        else:
-            shell("scripts/mapReads.sh -i={input.PE} -n={wildcards.sample} -a={params.assembly} -f={params.filter} -o=samples/bigBed/")
+    shell:
+        """scripts/mapReads.sh -i {input.reads} -n {wildcards.sample} -a {params.assembly} -f {params.filter} -o samples/bigBed/"""
+
