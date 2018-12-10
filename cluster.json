@@ -17,5 +17,13 @@
         "e" : "logs/mapReads/mapReads%j.err",
         "c" : 12,
         "mem" : 64000
+    },
+     "makeTracks" :
+    {
+        "J" : "makeTracks",
+        "o" : "logs/makeTracks/makeTracks%j.out",
+        "e" : "logs/makeTracks/makeTracks%j.err",
+        "c" : 4,
+        "mem" : 45000
     }
 }
