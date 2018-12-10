@@ -110,10 +110,8 @@ echo "input: $fastqFile; sampleID: $sample; mapping length: $mapLen; num mismatc
 # Set index and chromosome sizes
 ################################################################################
 
-# Breeshey please update the paths when we have hg19 and hg38 indexes built 
-
-INDEX=/groups/stark/indices/bowtie/${ASSEMBLY}/${ASSEMBLY}
-SIZES=/groups/stark/genomes/chrom/${ASSEMBLY}.chrom.sizes
+INDEX=/home/groups/CEDAR/tools/indices/bowtie/${ASSEMBLY}/${ASSEMBLY}
+SIZES=/home/groups/CEDAR/tools/genomes/chrom/${ASSEMBLY}.chrom.sizes
 
 [ -e "${INDEX}.1.ebwt" ] || echo >&2 "ERROR: No bowtie index files found for genome assembly ${assembly}!"
 [ -e "${SIZES}" ] || echo >&2 "ERROR: No chromosome sizes file found for genome assembly ${assembly}!"
