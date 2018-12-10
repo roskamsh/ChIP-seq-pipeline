@@ -19,7 +19,7 @@ if config["seq_type"]=="SE":
 else:
     SAMPLES, = glob_wildcards("samples/raw/{sample}_R1.fastq.gz")
 
-rule_dirs = ['mapReads']
+rule_dirs = ['mapReads','makeTracks']
 for rule in rule_dirs:
     if not os.path.exists(os.path.join(os.getcwd(),'logs',rule)):
         log_out = os.path.join(os.getcwd(), 'logs', rule)
@@ -34,6 +34,7 @@ for sample in SAMPLES:
 
 rule all:
     input:
-        expand("samples/bigBed/{sample}.mapped.reads.bb", sample = SAMPLES)
+        expand("samples/bigBed/{sample}.all.bb", sample = SAMPLES),
+        expand("samples/bigwig/{sample}.bw", sample = SAMPLES)
 
 include: "rules/align.smk"
