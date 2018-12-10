@@ -112,8 +112,8 @@ echo "input: $fastqFile; sampleID: $sample; mapping length: $mapLen; num mismatc
 
 # Breeshey please update the paths when we have hg19 and hg38 indexes built 
 
-INDEX="/home/groups/CEDAR/roskamsh/projects/Omics-QC-Pipeline-SE/data/genomes/GRCh38.primary_assembly.genome_bowtie1"
-SIZES="/home/groups/CEDAR/roskamsh/projects/Omics-QC-Pipeline-SE/data/genomes/chrNameLength.txt"
+INDEX=/groups/stark/indices/bowtie/${ASSEMBLY}/${ASSEMBLY}
+SIZES=/groups/stark/genomes/chrom/${ASSEMBLY}.chrom.sizes
 
 [ -e "${INDEX}.1.ebwt" ] || echo >&2 "ERROR: No bowtie index files found for genome assembly ${assembly}!"
 [ -e "${SIZES}" ] || echo >&2 "ERROR: No chromosome sizes file found for genome assembly ${assembly}!"
