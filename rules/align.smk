@@ -1,15 +1,33 @@
-rule mapReads:
+rule mapReads_paired:
     input:
-        reads = "samples/raw/{sample}.fastq.gz" if config["seq_type"]=="SE" else "samples/raw/{sample}_R1.fastq.gz|samples/raw/{sample}_R2.fastq.gz"
+        R1 = "samples/raw/{sample}_R1.fastq.gz",
+        R2 = "samples/raw/{sample}_R2.fastq.gz"
     output:
         "samples/bigBed/{sample}.all.bb"
     params:
         assembly = config["assembly"],
-        filter = config["filter"]
+        filter = config["filter"],
+        type = config["seq_type"]
     conda:
         "../envs/chip.yaml"
     shell:
-        """scripts/mapReads.sh -i {input.reads} -n {wildcards.sample} -a {params.assembly} -f {params.filter} -o samples/bigBed/"""
+        """scripts/mapReads.sh -i {input.R1} -I {input.R2} -t {params.type} -n {wildcards.sample} -a {params.assembly} -f {params.filter} -o samples/bigBed/"""
+
+rule mapReads_single:
+    input:
+        R1 = "samples/raw/{sample}.fastq.gz"
+    output:
+        "samples/bigBed/{sample}.all.bb"
+    params:
+        assembly = config["assembly"],
+        filter = config["filter"],
+        type = config["seq_type"]
+    conda:
+        "../envs/chip.yaml"
+    shell:
+        """scripts/mapReads.sh -i {input.R1} -t {params.type} -n {wildcards.sample} -a {params.assembly} -f {params.filter} -o samples/bigBed/"""
+
+
 
 rule makeTracks:
     input:

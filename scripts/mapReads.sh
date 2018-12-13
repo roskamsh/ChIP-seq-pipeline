@@ -2,7 +2,6 @@
 #set -o errexit
 #set -o pipefail
 
-
 ################################################################################
 # Set default values for mapping parameters
 ################################################################################
@@ -32,10 +31,11 @@ echo >&2 "
 $(basename $0) - Mapping FASTQ file to reference genome and returning BigBed file with coordinates of mapped reads (or fragments for paired end data)
 
 USAGE: $(basename $0) -i <FASTQ file(s)> -n <outfile basename> -s <species> -l <read lengthn> -m <max mismatches> -o <output directory> [OPTIONS]
--i    FASTQ (gzipped) file(s)                                                               [required]
-            Use -i \"read_1.fastq.gz|read_2.fastq.gz\" to map paired-end gzipped fastq files
+-i    FASTQ (gzipped) file(s) read 1                                                        [required]
+-I    FASTQ (gzipped) file read 2 (if PE)                                                   [required]
+-t    Type (SE or PE)                                                                       [required]
 -n    Basename of the output file                                                           [required]
--a    Genome assembly (hg19, dm3, etc.)                                                     [required]
+-a    Genome assembly (hg38, hg19, dm3, etc.)                                                     [required]
 -l    Length to which sequenced reads will be trimmed before mapping                        [default: $mapLen]
                       (50 for human, 36 for fly)
 -m    Maximal number of mismatches for mapping (usually 3 for human, 2 for fly)             [default: $nrMM]
@@ -62,10 +62,12 @@ fi
 # Parse input and error checking
 ################################################################################
 
-while getopts "i:n:l:m:g:a:f:r:u:o:" op
+while getopts "i:I:t:n:l:m:g:a:f:r:u:o:" op
 do
     case "$op" in
-        i)  fastqFile="$OPTARG";;
+        i)  fastqFile1="$OPTARG";;
+        I)  fastqFile2="$OPTARG";;
+        t)  type="$OPTARG";;
         n)  sample="$OPTARG";;
         l)  mapLen="$OPTARG";;
         m)  nrMM="$OPTARG";;
@@ -79,8 +81,13 @@ do
     esac
 done
 
-if [ -z "$fastqFile" ]; then
-    echo >&2 "ERROR: Specify input FASTQ file(s)!"
+if [ -z "$fastqFile1" ]; then
+    echo >&2 "ERROR: Specify input FASTQ file R1!"
+    exit 1
+fi
+
+if [ -z "$fastqFile2" ] && [ "$type" == "PE" ]; then
+    echo >&2 "ERROR: Specify input FASTQ file R2 for PE data!"
     exit 1
 fi
 
@@ -104,14 +111,16 @@ if [ -z "$outDir" ]; then
     exit 1
 fi
 
-echo "input: $fastqFile; sampleID: $sample; mapping length: $mapLen; num mismatches: $nrMM; gap for PE reads: $gap, Filter: $FILTER; KeepLog: $KEEPLOG; Use: $USE;  genome assembly: $assembly; Output Directory: $outDir"
+echo "input: $fastqFile1 $fastqFile2; type: $type; sampleID: $sample; mapping length: $mapLen; num mismatches: $nrMM; gap for PE reads: $gap, Filter: $FILTER; KeepLog: $KEEPLOG; Use: $USE;  genome assembly: $assembly; Output Directory: $outDir"
 
 ################################################################################
 # Set index and chromosome sizes
 ################################################################################
 
-INDEX=/home/groups/CEDAR/tools/indices/bowtie/${ASSEMBLY}/${ASSEMBLY}
-SIZES=/home/groups/CEDAR/tools/genomes/chrom/${ASSEMBLY}.chrom.sizes
+INDEX=/home/groups/CEDAR/tools/indices/bowtie/${assembly}/${assembly}
+SIZES=/home/groups/CEDAR/tools/genomes/chrom/${assembly}.chrom.sizes
+
+echo ${INDEX} ${SIZES} 
 
 [ -e "${INDEX}.1.ebwt" ] || echo >&2 "ERROR: No bowtie index files found for genome assembly ${assembly}!"
 [ -e "${SIZES}" ] || echo >&2 "ERROR: No chromosome sizes file found for genome assembly ${assembly}!"
@@ -153,15 +162,6 @@ TMP=$(mktemp -d)
 # Determine type of input - single end or paired end
 ################################################################################
 
-b=( $(echo $fastqFile | tr "|" " ") )
-if [ ${#b[@]} == 1 ]; then
-    type="single"
-elif [ ${#b[@]} == 2 ]; then
-    type="paired"
-    fastqFile1=${b[0]}
-    fastqFile2=${b[1]}
-fi
-
 echo $type
 # For NextSeq, you receive 4 fastq files, need to combine them prior to analysis
 # This separation of se and pe would need to be done at the trimming step, extraction step
@@ -172,9 +172,9 @@ echo $type
 ################################################################################
 (echo -n "Running fastx_trimmer: "; date) >> $TMP/LOG.log
 
-if [ "$type" == "single" ]; then
-    zcat $fastqFile | fastx_trimmer -Q33 -l $mapLen -o ${TMP}/${sample}.trimmed.fq
-elif [ "$type" == "paired" ]; then
+if [ "$type" == "SE" ]; then
+    zcat $fastqFile1 | fastx_trimmer -Q33 -l $mapLen -o ${TMP}/${sample}.trimmed.fq
+elif [ "$type" == "PE" ]; then
     zcat $fastqFile1 | fastx_trimmer -Q33 -l $mapLen -o ${TMP}/${sample}.read_1.trimmed.fq
     zcat $fastqFile2 | fastx_trimmer -Q33 -l $mapLen -o ${TMP}/${sample}.read_2.trimmed.fq
 fi
@@ -185,10 +185,10 @@ fi
 ################################################################################
 (echo -n "Running bowtie: "; date) >> $TMP/LOG.log
 
-if [ "$type" == "single" ]; then
+if [ "$type" == "SE" ]; then
     bowtie -p $USE -q -v $nrMM -m 1 --best --strata $INDEX ${TMP}/${sample}.trimmed.fq > ${TMP}/${sample}.reads.bowtie 2>> $TMP/LOG.log
     rm ${TMP}/${sample}.trimmed.fq
-elif [ "$type" == "paired" ]; then
+elif [ "$type" == "PE" ]; then
     bowtie -p $USE -q -X $gap -v $nrMM -m 1 --best --strata $INDEX -1 ${TMP}/${sample}.read_1.trimmed.fq -2 ${TMP}/${sample}.read_2.trimmed.fq > ${TMP}/${sample}.reads.bowtie 2>> $TMP/LOG.log
     rm ${TMP}/${sample}.read_1.trimmed.fq ${TMP}/${sample}.read_2.trimmed.fq
 fi
@@ -200,7 +200,7 @@ fi
 ################################################################################
 (echo -n "Parsing & sorting output: "; date) >> $TMP/LOG.log
 
-if [ "$type" == "single" ]; then
+if [ "$type" == "SE" ]; then
     
     cat ${TMP}/${sample}.reads.bowtie | \
      awk -vFS="\t" -vOFS="\t" -vR=$mapLen '
@@ -209,7 +209,7 @@ if [ "$type" == "single" ]; then
         }' | \
      sort -k1,1 -k2,2n -k6,6 -S 1G --parallel $(echo $USE | awk '{print $1-2}') > ${TMP}/${sample}.reads.sorted.bed
 
-elif [ "$type" == "paired" ]; then
+elif [ "$type" == "PE" ]; then
 
     cat ${TMP}/${sample}.reads.bowtie | \
      awk -vFS="\t" -vOFS="\t" '{
@@ -254,16 +254,16 @@ rm ${TMP}/${sample}.reads.bowtie
 ################################################################################
 (echo -n "Applying filters: "; date) >> $TMP/LOG.log
 
-if [ $FILTER = "0" ]; then
+if [ $FILTER == "0" ]; then
     /home/groups/CEDAR/tools/kentUtils/bedToBigBed ${TMP}/${sample}.reads.sorted.bed $SIZES ${TMP}/${sample}.all.bb 2>> ${TMP}/LOG.log
     echo >> ${TMP}/LOG.log
     mv ${TMP}/${sample}.all.bb ${outDir}/${sample}.all.bb
-elif [ $FILTER = "1" ]; then
+elif [ $FILTER == "1" ]; then
     awk -vOFS='\t' '(!x[$1" "$2" "$3" "$6]++){print $0}' ${TMP}/${sample}.reads.sorted.bed > ${TMP}/${sample}.reads.filtered.bed
     /home/groups/CEDAR/tools/kentUtils/bedToBigBed ${TMP}/${sample}.reads.filtered.bed $SIZES ${TMP}/${sample}.bb 2>> ${TMP}/LOG.log
     echo >> ${TMP}/LOG.log
     mv ${TMP}/${sample}.bb ${outDir}/${sample}.bb
-elif [ $FILTER = "A" ]; then
+elif [ $FILTER == "A" ]; then
     /home/groups/CEDAR/tools/kentUtils/bedToBigBed ${TMP}/${sample}.reads.sorted.bed $SIZES ${TMP}/${sample}.all.bb 2>> ${TMP}/LOG.log
     awk -vOFS='\t' '(!x[$1" "$2" "$3" "$6]++){print $0}' ${TMP}/${sample}.reads.sorted.bed > ${TMP}/${sample}.reads.filtered.bed
     /home/groups/CEDAR/tools/kentUtils/bedToBigBed ${TMP}/${sample}.reads.filtered.bed $SIZES ${TMP}/${sample}.bb 2>> ${TMP}/LOG.log
@@ -277,18 +277,18 @@ fi
 date ) >> $TMP/LOG.log
 
 # clean up
-if [ $FILTER = "0" ]; then
+if [ $FILTER == "0" ]; then
     rm ${TMP}/${sample}.reads.sorted.bed
-elif [ $FILTER = "1" ]; then
+elif [ $FILTER == "1" ]; then
     rm ${TMP}/${sample}.reads.sorted.bed
     rm ${TMP}/${sample}.reads.filtered.bed
-elif [ $FILTER = "A" ]; then
+elif [ $FILTER == "A" ]; then
     rm ${TMP}/${sample}.reads.sorted.bed
     rm ${TMP}/${sample}.reads.filtered.bed
 fi    
 
 
-if [ $KEEPLOG = "1" ]; then
+if [ $KEEPLOG == "1" ]; then
     mv ${TMP}/LOG.log ${outDir}/${sample}.log
 fi
 
