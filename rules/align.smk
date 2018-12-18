@@ -1,7 +1,7 @@
 rule mapReads_paired:
     input:
-        R1 = "samples/raw/{sample}_R1.fastq.gz",
-        R2 = "samples/raw/{sample}_R2.fastq.gz"
+        R1 = "samples/cases/{sample}_R1.fastq.gz",
+        R2 = "samples/cases/{sample}_R2.fastq.gz"
     output:
         "samples/bigBed/{sample}.all.bb"
     params:
@@ -15,7 +15,7 @@ rule mapReads_paired:
 
 rule mapReads_single:
     input:
-        R1 = "samples/raw/{sample}.fastq.gz"
+        R1 = "samples/cases/{sample}.fastq.gz"
     output:
         "samples/bigBed/{sample}.all.bb"
     params:
@@ -26,7 +26,6 @@ rule mapReads_single:
         "../envs/chip.yaml"
     shell:
         """scripts/mapReads.sh -i {input.R1} -t {params.type} -n {wildcards.sample} -a {params.assembly} -f {params.filter} -o samples/bigBed/"""
-
 
 
 rule makeTracks:
@@ -40,3 +39,4 @@ rule makeTracks:
         "../envs/chip.yaml"
     shell:
         """scripts/makeTracks.sh -i {input} -o {output} -g {params.assembly}"""
+
