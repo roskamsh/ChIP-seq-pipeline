@@ -35,7 +35,7 @@ USAGE: $(basename $0) -i <FASTQ file(s)> -n <outfile basename> -s <species> -l <
 -I    FASTQ (gzipped) file read 2 (if PE)                                                   [required]
 -t    Type (SE or PE)                                                                       [required]
 -n    Basename of the output file                                                           [required]
--a    Genome assembly (hg38, hg19, dm3, etc.)                                                     [required]
+-a    Genome assembly (hg38, hg19, dm3, etc.)                                               [required]
 -l    Length to which sequenced reads will be trimmed before mapping                        [default: $mapLen]
                       (50 for human, 36 for fly)
 -m    Maximal number of mismatches for mapping (usually 3 for human, 2 for fly)             [default: $nrMM]
@@ -117,8 +117,8 @@ echo "input: $fastqFile1 $fastqFile2; type: $type; sampleID: $sample; mapping le
 # Set index and chromosome sizes
 ################################################################################
 
-INDEX=/home/groups/CEDAR/tools/indices/bowtie/${assembly}/${assembly}
-SIZES=/home/groups/CEDAR/tools/genomes/chrom/${assembly}.chrom.sizes
+INDEX=/home/groups/CEDAR/anno/indices/bowtie/${assembly}/${assembly}
+SIZES=/home/groups/CEDAR/anno/chromsizes/${assembly}.chrom.sizes
 
 echo ${INDEX} ${SIZES} 
 
