@@ -42,12 +42,12 @@
         "c" : 4,
         "mem" : 45000
     },
-     "macs2" :
+     "call_peaks" :
     {
-        "J" : "macs2",
-        "o" : "logs/macs2/macs2%j.out",
-        "e" : "logs/macs2/macs2%j.err",
-        "c" : 4,
+        "J" : "call_peaks",
+        "o" : "logs/call_peaks/call_peaks%j.out",
+        "e" : "logs/call_peaks/call_peaks%j.err",
+        "c" : 6,
         "mem" : 45000
     }
 }
