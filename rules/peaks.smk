@@ -13,6 +13,7 @@ def get_gsize():
 def get_control(wildcards):
     return md.loc[(wildcards.sample),["Control"]]
 
+
 rule bb2bed:
     input:
         "samples/bigBed/{sample}.all.bb"
@@ -23,17 +24,17 @@ rule bb2bed:
 
         shell("bigBedToBed {input} {output}")
 
-rule macs2:
+rule call_peaks:
     input:
         case = "samples/bed/{sample}.bed",
         control = get_control
     output:
-        "results/macs2/{sample}/{sample}_peaks.xls",
+        "results/macs2/{sample}/{sample}_peaks.xls" if get_peak == "narrow" else "results/SICER/{sample}/{sample}-W200-G600-islands-summary"
     params:
-        gsize = get_gsize(),
-        control = get_control
+        assembly = config["assembly"],
+        peak = get_peak
     conda:
         "../envs/peaks.yaml"
     shell:
-        """macs2 callpeak -t {input.case} -c {input.control} -n {wildcards.sample} --outdir results/macs2/{wildcards.sample} -g {params.gsize}"""
+        """scripts/callPeaks.sh -t {input.case} -c {input.control} -n {wildcards.sample} -p {params.peak} -a {params.assembly}"""
 
