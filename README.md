@@ -81,10 +81,10 @@ done
 Upload your metadata file to the `data` directory, with the correct columns:
 * This file should be formatted as such:
 ```
-StudyID  Control   Peak_call
+SampleID  Control   Peak_call
 H3K4Me3-1  samples/bed/IgG.bed  narrow
 ```
-* Each row should be a `CASE` (i.e. not an Input/IgG), with the `Control` for that sample listed (written as samples/bed/{ControlID}.bed) and the type of peak calling you would like (either `broad` or `narrow`)
+* Each row should be a `CASE` (i.e. not an Input/IgG), with the `Control` for that sample listed (written as `samples/bed/{ControlID}.bed`) and the type of peak calling you would like (either `broad` or `narrow`)
 * All elements in this file should be tab-separated
 * An example file is located in this repository here: `data/metadata.txt`
 
