@@ -5,7 +5,6 @@ channels:
   - defaults
 dependencies:
   - ghostscript=9.18=1
-  - homer=4.9.1=pl526h2d50403_6
   - macs2=2.1.2=py27r341_0
   - meme=5.0.2=py27pl526h96dd833_5
   - perl-app-cpanminus=1.7044=pl526_1
@@ -113,4 +112,5 @@ dependencies:
   - numpy=1.15.0=py27h1b885b7_0
   - numpy-base=1.15.0=py27h3dfced4_0
   - scipy=1.1.0=py27hc49cb51_0
+prefix: /home/users/roskamsh/miniconda3/envs/peaks
 
