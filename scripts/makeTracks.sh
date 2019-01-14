@@ -74,9 +74,8 @@ done
 ################################################################################
 
 # Set $INDEX and $SIZES
-INDEX=/home/groups/CEDAR/tools/indices/bowtie/${ASSEMBLY}/${ASSEMBLY}
-SIZES=/home/groups/CEDAR/tools/genomes/chrom/${ASSEMBLY}.chrom.sizes
-
+INDEX=/home/groups/CEDAR/anno/indices/bowtie/${ASSEMBLY}/${ASSEMBLY}
+SIZES=/home/groups/CEDAR/anno/chromsizes/${ASSEMBLY}.chrom.sizes
 
 # Throw error message if chromosome sizes file does not exist
 if [ ! -e "$SIZES" ]; then

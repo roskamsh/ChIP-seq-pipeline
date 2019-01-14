@@ -58,6 +58,14 @@ if [ -z "$assembly" ]; then
     exit 1
 fi
 
+###############################################################################
+# Set chromosome sizes/annotations and bigBed tool for bedToBigBed conversion
+##############################################################################
+
+export PATH=$PATH:/home/groups/CEDAR/tools/homer/bin/
+SIZES=/home/groups/CEDAR/anno/chromsizes/${assembly}.chrom.sizes
+bigBedToBed=/home/groups/CEDAR/tools/kentUtils/bedToBigBed
+
 ################################################################################
 # Create tmp directory and start log file
 ################################################################################
@@ -102,22 +110,78 @@ elif [ "$peak" == "broad" ]; then
     outDir="results/SICER/${sample}"
 fi
 
+# Created output directory if it does not already exist
+if [ ! -d "${WDIR}/${outDir}" ]; then
+    mkdir ${WDIR}/${outDir}
+fi
+
 ###############################################################################
 # Call peaks
 ###############################################################################
 
 if [ "$peak" == "narrow" ]; then
-    macs2 callpeak -t ${WDIR}/${treated} -c ${WDIR}/${control} -n $sample --outdir $TMP -g $gsize &> $TMP/LOG.log
+    macs2 callpeak -t ${WDIR}/${treated} -c ${WDIR}/${control} -n $sample --outdir $TMP -g $gsize &>> $TMP/LOG.log
 elif [ "$peak" == "broad" ]; then
-    SICER.sh ${WDIR}/${inputDir} $basenameTreat $basenameControl $TMP $assembly 1 200 150 0.8 600 1e-8 &> $TMP/LOG.log
+    SICER.sh ${WDIR}/${inputDir} $basenameTreat $basenameControl $TMP $assembly 1 200 150 0.8 600 1e-8 &>> $TMP/LOG.log
+fi
+
+##############################################################################
+# Make bigBeds for viewing
+##############################################################################
+
+if [ "$peak" == "narrow" ]; then
+    # Put peaks in bed format for UCSC bb files
+    grep -v -E "^#|^$|fold_enrichment" $TMP/${sample}_peaks.xls | awk -vOFS="\t" '{print $1, $2, $3, $10, 1000}' | sort -k1,1 -k2,2n > $TMP/${sample}.macsPeaks.bed
+    # Convert bed to bigBed
+    $bigBedToBed $TMP/${sample}.macsPeaks.bed $SIZES $TMP/${sample}.macsPeaks.bb &>> $TMP/LOG.log
+elif [ "$peak" == "broad" ]; then
+    # Put peaks in bed format for UCSC bb files
+    awk -vOFS="\t" -vS=$sample '{print $1, $2, $3, S"_"NR, 1000}' $TMP/${sample}-W200-G600-FDR1e-8-island.bed | sort -k1,1 -k2,2n > $TMP/${sample}.sicerPeaks.bed
+    # Convert bed to bigBed
+    $bigBedToBed $TMP/${sample}.sicerPeaks.bed $SIZES $TMP/${sample}.sicerPeaks.bb &>> $TMP/LOG.log
+    # when we figure out ucsc and aws add the bigBedHeader links
+fi
+
+##############################################################################
+# Annotate peaks to nearest TSS
+##############################################################################
+
+( echo "path to annotatePeaks script" ) &>> $TMP/LOG.log
+which annotatePeaks.pl &>> $TMP/LOG.log
+( echo "path to homer installation" ) &>> $TMP/LOG.log
+which homer &>> $TMP/LOG.log
+
+if [ "$peak" == "narrow" ]; then
+    annotatePeaks.pl $TMP/${sample}.macsPeaks.bed $assembly > ${sample}_annotated_peaks.txt
+elif [ "$peak" == "broad" ]; then
+    annotatePeaks.pl $TMP/${sample}.sicerPeaks.bed $assembly > ${sample}_annotated_peaks.txt
 fi
 
 (echo -n "End: "
 date ) >> $TMP/LOG.log
 
-##############################################################################
-# Move output files to output directory and remove TMP directory
-#############################################################################
+###############################################################################
+# Find motifs 
+###############################################################################
+
+outDir2=${WDIR}/results/motifs/${sample}
+
+# Created output directory if it does not already exist
+if [ ! -d "$outDir2" ]; then
+    mkdir $outDir2
+fi
+
+# Find motifs using homer
+if [ "$peak" == "narrow" ]; then
+    findMotifsGenome.pl $TMP/${sample}.macsPeaks.bed hg38 $outDir2 -size 200 -mask &>> $TMP/LOG.log
+elif [ "$peak" == "broad" ]; then
+    findMotifsGenome.pl $TMP/${sample}.sicerPeaks.bed hg38 $outDir2 -size 2 -mask &>> $TMP/LOG.log
+fi
+
+###############################################################################
+# Move peak-calling output files to output directory
+###############################################################################
+
 mv $TMP/LOG.log ${TMP}/${sample}.log
 mv $TMP/* ${WDIR}/${outDir}
 rm -rf $TMP
