@@ -31,7 +31,7 @@ CONTROLS_UNIQUE = list(set(CONTROLS))
 
 SAMPLES = CASES + CONTROLS_UNIQUE
 
-rule_dirs = ['mapReads_single','makeTracks','bb2bed','call_peaks']
+rule_dirs = ['mapReads','makeTracks','bb2bed','call_peaks']
 for rule in rule_dirs:
     if not os.path.exists(os.path.join(os.getcwd(),'logs',rule)):
         log_out = os.path.join(os.getcwd(), 'logs', rule)
