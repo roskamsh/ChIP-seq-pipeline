@@ -10,19 +10,35 @@
         "c" : 4,
         "mem" : 45000
     },
-     "mapReads_single" :
+     "mapReads_single_cases" :
     {
-        "J" : "mapReads_single",
-        "o" : "logs/mapReads/mapReads_single%j.out",
-        "e" : "logs/mapReads/mapReads_single%j.err",
+        "J" : "mapReads_single_cases",
+        "o" : "logs/mapReads/mapReads_single_cases%j.out",
+        "e" : "logs/mapReads/mapReads_single_cases%j.err",
         "c" : 12,
         "mem" : 64000
     },
-     "mapReads_paired" :
+     "mapReads_single_controls" :
     {
-        "J" : "mapReads_paired",
-        "o" : "logs/mapReads/mapReads_paired%j.out",
-        "e" : "logs/mapReads/mapReads_paired%j.err",
+        "J" : "mapReads_single_controls",
+        "o" : "logs/mapReads/mapReads_single_controls%j.out",
+        "e" : "logs/mapReads/mapReads_single_controls%j.err",
+        "c" : 12,
+        "mem" : 64000
+    },
+     "mapReads_paired_cases" :
+    {
+        "J" : "mapReads_paired_cases",
+        "o" : "logs/mapReads/mapReads_paired_cases%j.out",
+        "e" : "logs/mapReads/mapReads_paired_cases%j.err",
+        "c" : 12,
+        "mem" : 64000
+    },
+     "mapReads_paired_controls" :
+    {
+        "J" : "mapReads_paired_controls",
+        "o" : "logs/mapReads/mapReads_paired_controls%j.out",
+        "e" : "logs/mapReads/mapReads_paired_controls%j.err",
         "c" : 12,
         "mem" : 64000
     },
@@ -47,7 +63,7 @@
         "J" : "call_peaks",
         "o" : "logs/call_peaks/call_peaks%j.out",
         "e" : "logs/call_peaks/call_peaks%j.err",
-        "c" : 6,
-        "mem" : 45000
+        "c" : 12,
+        "mem" : 64000
     }
 }
