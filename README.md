@@ -4,7 +4,7 @@ This is a pipeline to run basic Chromatin immunoprecipitation sequencing analysi
 This is a package of bash scripts that enable reading, processing and analysis of ChIP-seq Omics' datasets. This package implements the Snakemake management workflow system and is currently implemented to work with the cluster management and job scheduling system SLURM. This snakemake workflow utilizes conda installations to download and use packages for further analysis, so please ensure that you have installed miniconda prior to use.
 
 # Questions/issues
-Please add an issue to the cfRNA-seq repository. We would appreciate if your issue included sample code/files (as appropriate) so that we can reproduce your bug/issue.
+Please add an issue to the ChIP-seq repository. We would appreciate if your issue included sample code/files (as appropriate) so that we can reproduce your bug/issue.
 
 # Contributing
 We welcome contributors! For your pull requests, please include the following:
