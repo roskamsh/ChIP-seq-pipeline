@@ -119,6 +119,7 @@ echo "input: $fastqFile1 $fastqFile2; type: $type; sampleID: $sample; mapping le
 
 INDEX=/home/groups/CEDAR/anno/indices/bowtie/${assembly}/${assembly}
 SIZES=/home/groups/CEDAR/anno/chromsizes/${assembly}.chrom.sizes
+bigBedToBed=/home/groups/CEDAR/tools/kentUtils/bedToBigBed
 
 echo ${INDEX} ${SIZES} 
 
@@ -255,18 +256,18 @@ rm ${TMP}/${sample}.reads.bowtie
 (echo -n "Applying filters: "; date) >> $TMP/LOG.log
 
 if [ $FILTER == "0" ]; then
-    /home/groups/CEDAR/tools/kentUtils/bedToBigBed ${TMP}/${sample}.reads.sorted.bed $SIZES ${TMP}/${sample}.all.bb 2>> ${TMP}/LOG.log
+    $bedToBigBed ${TMP}/${sample}.reads.sorted.bed $SIZES ${TMP}/${sample}.all.bb 2>> ${TMP}/LOG.log
     echo >> ${TMP}/LOG.log
     mv ${TMP}/${sample}.all.bb ${outDir}/${sample}.all.bb
 elif [ $FILTER == "1" ]; then
     awk -vOFS='\t' '(!x[$1" "$2" "$3" "$6]++){print $0}' ${TMP}/${sample}.reads.sorted.bed > ${TMP}/${sample}.reads.filtered.bed
-    /home/groups/CEDAR/tools/kentUtils/bedToBigBed ${TMP}/${sample}.reads.filtered.bed $SIZES ${TMP}/${sample}.bb 2>> ${TMP}/LOG.log
+    $bedToBigBed ${TMP}/${sample}.reads.filtered.bed $SIZES ${TMP}/${sample}.bb 2>> ${TMP}/LOG.log
     echo >> ${TMP}/LOG.log
     mv ${TMP}/${sample}.bb ${outDir}/${sample}.bb
 elif [ $FILTER == "A" ]; then
-    /home/groups/CEDAR/tools/kentUtils/bedToBigBed ${TMP}/${sample}.reads.sorted.bed $SIZES ${TMP}/${sample}.all.bb 2>> ${TMP}/LOG.log
+    $bedToBigBed ${TMP}/${sample}.reads.sorted.bed $SIZES ${TMP}/${sample}.all.bb 2>> ${TMP}/LOG.log
     awk -vOFS='\t' '(!x[$1" "$2" "$3" "$6]++){print $0}' ${TMP}/${sample}.reads.sorted.bed > ${TMP}/${sample}.reads.filtered.bed
-    /home/groups/CEDAR/tools/kentUtils/bedToBigBed ${TMP}/${sample}.reads.filtered.bed $SIZES ${TMP}/${sample}.bb 2>> ${TMP}/LOG.log
+    $bedToBigBed ${TMP}/${sample}.reads.filtered.bed $SIZES ${TMP}/${sample}.bb 2>> ${TMP}/LOG.log
     echo >> ${TMP}/LOG.log
     mv ${TMP}/${sample}.bb ${outDir}/${sample}.bb
     mv ${TMP}/${sample}.all.bb ${outDir}/${sample}.all.bb
