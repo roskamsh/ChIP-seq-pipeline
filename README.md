@@ -46,20 +46,21 @@ Clone the ChIP-seq Pipeline into your working directory.
 $ git clone https://github.com/ohsu-cedar-comp-hub/ChIP-seq-pipeline.git
 ```
 
-Create a `samples/raw` directory, a `logs` directory and a `data` directory (if they do not exist) in your `wdir()`.
+Create a `samples/cases` & `samples/controls` directory, a `logs` directory and a `data` directory (if they do not exist) in your `wdir()`.
 
 ```
 $ mkdir logs
 $ mkdir data
 $ mkdir samples
-$ mkdir samples/raw
+$ mkdir samples/cases
+$ mkdir samples/controls
 ```
 
-Symbollically link the fastq files of your samples to the `wdir/samples/raw` directory using a bash script loop in your terminal.
+Symbollically link the fastq files of your samples to the `wdir/samples/cases` directory using a bash script loop in your terminal.
 
 * For PE data:
 ```
-$ cd samples/raw
+$ cd samples/cases
 $ ls -1 /path/to/data/LIB*R1*gz | while read gz; do
     R1=$( basename $gz | cut -d _ -f 2 | awk '{print $1"_R1.fastq.gz"}' )
     R2=$( basename $gz | cut -d _ -f 2 | awk '{print $1"_R2.fastq.gz"}' )
@@ -70,12 +71,17 @@ done
 ```
 * For SE data:
 ```
-$ cd samples/raw
+$ cd samples/cases
 $ ls -1 /path/to/data/LIB*gz | while read gz; do 
   R=$( basename $gz | cut -d '_' -f 2 | awk '{print $1".fastq.gz"}' )
   echo $R
   ln -s $gz ./$R
 done
+```
+
+Then move your controls that you have defined in the `metadata.txt` file to `samples/controls`.
+```
+$ mv samples/cases/{FileName1,FileNameN}.fastq.gz samples/controls
 ```
 
 Upload your metadata file to the `data` directory, with the correct columns:
