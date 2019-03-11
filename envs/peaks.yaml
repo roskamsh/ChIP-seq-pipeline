@@ -41,7 +41,7 @@ dependencies:
   - libpng=1.6.36=hbc83047_0
   - libssh2=1.8.0=h1ba5d50_4
   - libstdcxx-ng=8.2.0=hdf63c60_1
-  - libtiff=4.0.10=h2733197_1001
+  - libtiff=4.0.10
   - libuuid=1.0.3=h1bed415_2
   - libxcb=1.13=h1bed415_1
   - libxml2=2.9.9=he19cac6_0
@@ -68,5 +68,4 @@ dependencies:
   - wheel=0.32.3=py27_0
   - xz=5.2.4=h14c3975_4
   - zlib=1.2.11=h7b6447c_3
-prefix: /home/users/roskamsh/miniconda3/envs/peaks
 

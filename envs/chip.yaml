@@ -30,7 +30,7 @@ dependencies:
   - libgcc-ng=8.2.0=hdf63c60_1
   - libpng=1.6.36=hbc83047_0
   - libstdcxx-ng=8.2.0=hdf63c60_1
-  - libtiff=4.0.10=h2733197_1001
+  - libtiff=4.0.10
   - ncurses=6.1=he6710b0_1
   - openssl=1.1.1a=h7b6447c_0
   - pip=18.1=py36_0
@@ -43,5 +43,4 @@ dependencies:
   - wheel=0.32.3=py36_0
   - xz=5.2.4=h14c3975_4
   - zlib=1.2.11=h7b6447c_3
-prefix: /home/users/roskamsh/miniconda3/envs/chip
 
