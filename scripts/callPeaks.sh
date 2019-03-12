@@ -64,7 +64,7 @@ fi
 
 export PATH=$PATH:/home/groups/CEDAR/tools/homer/bin/
 SIZES=/home/groups/CEDAR/anno/chromsizes/${assembly}.chrom.sizes
-bigBedToBed=/home/groups/CEDAR/tools/kentUtils/bedToBigBed
+export PATH=$PATH:/home/groups/CEDAR/tools/kentUtils/
 
 ################################################################################
 # Create tmp directory and start log file
@@ -133,12 +133,12 @@ if [ "$peak" == "narrow" ]; then
     # Put peaks in bed format for UCSC bb files
     grep -v -E "^#|^$|fold_enrichment" $TMP/${sample}_peaks.xls | awk -vOFS="\t" '{print $1, $2, $3, $10, 1000}' | sort -k1,1 -k2,2n > $TMP/${sample}.macsPeaks.bed
     # Convert bed to bigBed
-    $bigBedToBed $TMP/${sample}.macsPeaks.bed $SIZES $TMP/${sample}.macsPeaks.bb &>> $TMP/LOG.log
+    bigBedToBed $TMP/${sample}.macsPeaks.bed $SIZES $TMP/${sample}.macsPeaks.bb &>> $TMP/LOG.log
 elif [ "$peak" == "broad" ]; then
     # Put peaks in bed format for UCSC bb files
     awk -vOFS="\t" -vS=$sample '{print $1, $2, $3, S"_"NR, 1000}' $TMP/${sample}-W200-G600-FDR1e-8-island.bed | sort -k1,1 -k2,2n > $TMP/${sample}.sicerPeaks.bed
     # Convert bed to bigBed
-    $bigBedToBed $TMP/${sample}.sicerPeaks.bed $SIZES $TMP/${sample}.sicerPeaks.bb &>> $TMP/LOG.log
+    bigBedToBed $TMP/${sample}.sicerPeaks.bed $SIZES $TMP/${sample}.sicerPeaks.bb &>> $TMP/LOG.log
     # when we figure out ucsc and aws add the bigBedHeader links
 fi
 
@@ -173,9 +173,9 @@ fi
 
 # Find motifs using homer
 if [ "$peak" == "narrow" ]; then
-    findMotifsGenome.pl $TMP/${sample}.macsPeaks.bed hg38 $outDir2 -size 200 -mask &>> $TMP/LOG.log
+    findMotifsGenome.pl $TMP/${sample}.macsPeaks.bed $assembly $outDir2 -size 200 -mask &>> $TMP/LOG.log
 elif [ "$peak" == "broad" ]; then
-    findMotifsGenome.pl $TMP/${sample}.sicerPeaks.bed hg38 $outDir2 -size 2 -mask &>> $TMP/LOG.log
+    findMotifsGenome.pl $TMP/${sample}.sicerPeaks.bed $assembly $outDir2 -size 2 -mask &>> $TMP/LOG.log
 fi
 
 ###############################################################################

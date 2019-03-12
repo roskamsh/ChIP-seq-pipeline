@@ -76,6 +76,7 @@ done
 # Set $INDEX and $SIZES
 INDEX=/home/groups/CEDAR/anno/indices/bowtie/${ASSEMBLY}/${ASSEMBLY}
 SIZES=/home/groups/CEDAR/anno/chromsizes/${ASSEMBLY}.chrom.sizes
+export PATH=$PATH:/home/groups/CEDAR/tools/kentUtils/
 
 # Throw error message if chromosome sizes file does not exist
 if [ ! -e "$SIZES" ]; then
@@ -111,7 +112,7 @@ fi
 # Convert BedGraph file to BigBed
 # If required extend the reads prior to computing the coverage
 # EXT2 is and additional extension parameter
-/home/groups/CEDAR/tools/kentUtils/bigBedToBed $INFILE stdout | \
+bigBedToBed $INFILE stdout | \
   if [ "$E" = "0" -a "$EXT2" = "0" ]; then
     cat  
   else
@@ -130,7 +131,7 @@ fi
     else
       awk -vN=$N -vOFS="\t" '{print $1,$2,$3,$4}'
     fi | \
-  /home/groups/CEDAR/tools/kentUtils/wigToBigWig stdin $SIZES $OUTFILE
+  wigToBigWig stdin $SIZES $OUTFILE
 
 # Exit
 exit 0
