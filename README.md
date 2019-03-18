@@ -46,11 +46,10 @@ Clone the ChIP-seq Pipeline into your working directory.
 $ git clone https://github.com/ohsu-cedar-comp-hub/ChIP-seq-pipeline.git
 ```
 
-Create a `samples/cases` & `samples/controls` directory, a `logs` directory and a `data` directory (if they do not exist) in your `wdir()`.
+Create a `samples/cases`, a `samples/controls` directory, and a `logs` directory in your `wdir()`.
 
 ```
 $ mkdir logs
-$ mkdir data
 $ mkdir samples
 $ mkdir samples/cases
 $ mkdir samples/controls
