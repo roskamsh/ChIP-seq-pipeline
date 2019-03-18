@@ -118,3 +118,8 @@ To see how the job is running, look at your queue.
 ```
 $ squeue -u your_username
 ```
+
+Directed Acyclic Graph (DAG) of an example workflow including two samples
+======================
+![Example Workflow](https://github.com/ohsu-cedar-comp-hub/ChIP-seq-pipeline/blob/master/data/dag.png)
+
