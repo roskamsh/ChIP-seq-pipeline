@@ -62,9 +62,10 @@ rule makeTracks:
     output:
         "samples/bigwig/{sample}.bw"
     params:
-        assembly = config["assembly"]
+        assembly = config["assembly"],
+	ext = config["extension"]
     conda:
         "../envs/chip.yaml"
     shell:
-        """scripts/makeTracks.sh -i {input} -o {output} -g {params.assembly}"""
+        """scripts/makeTracks.sh -i {input} -o {output} -g {params.assembly} -e {params.ext}"""
 

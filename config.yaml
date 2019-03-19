@@ -10,3 +10,5 @@ bed_tool:
   /home/groups/CEDAR/tools/kentUtils/bigBedToBed
 samples:
   /home/groups/CEDAR/roskamsh/projects/ChIP-seq-pipeline/data/ChIP_metadata.txt
+extension:
+  150
