@@ -10,7 +10,7 @@ rule bb2bed:
     run:
         bigBedToBed = config["bed_tool"]
 
-        shell("bigBedToBed {input} {output}")
+        shell("""{bigBedToBed} {input} {output}""")
 
 rule call_peaks:
     input:
