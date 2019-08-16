@@ -64,3 +64,5 @@ rule all:
 
 include: "rules/align.smk"
 include: "rules/peaks.smk"
+
+
