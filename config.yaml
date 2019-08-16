@@ -4,5 +4,11 @@ filter:
   0
 project_id:
   ChIP-seq-12-06-2018
-type:
+seq_type:
   SE
+bed_tool:
+  /home/groups/CEDAR/tools/kentUtils/bigBedToBed
+samples:
+  /home/groups/CEDAR/roskamsh/projects/ChIP-seq-pipeline/data/ChIP_metadata.txt
+extension:
+  150
